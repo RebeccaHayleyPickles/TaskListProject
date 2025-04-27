@@ -1,108 +1,119 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using TaskListProject.Controllers;
 using TaskListProject.Models;
+using TaskListProject.Enums;
 using Xunit;
 
 namespace TaskListProject.Tests;
 
-public class ToDoItemsControllerTests
+public class ToDoItemsControllerTests : IDisposable
 {
-    private TaskListDbContext GetInMemoryDbContext()
+    private readonly TaskListDbContext _context;
+    private readonly ToDoItemsController _controller;
+
+    public ToDoItemsControllerTests()
     {
         var options = new DbContextOptionsBuilder<TaskListDbContext>()
-            .UseInMemoryDatabase(Guid.NewGuid().ToString())
-            .Options;
+        .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString()) // 💡 unique name
+        .Options;
 
-        return new TaskListDbContext(options);
+        _context = new TaskListDbContext(options);
+        _controller = new ToDoItemsController(_context);
     }
 
     [Fact]
-    public async Task GetTasks_ReturnsAllTasks()
+    public async Task GetToDos_ReturnsAllToDos()
     {
         // Arrange
-        var context = GetInMemoryDbContext();
-        context.Tasks.Add(new Task { Title = "Test Task 1", Status = Enums.Status.NotStarted });
-        context.Tasks.Add(new Task { Title = "Test Task 2", Status = Enums.Status.Completed });
-        await context.SaveChangesAsync();
-
-        var controller = new TaskController(context);
+        _context.ToDoItems.Add(new ToDoItem { Title = "ToDo 1", Status = "Status.NotStarted" });
+        _context.ToDoItems.Add(new ToDoItem { Title = "ToDo 2", Status = "Status.Completed" });
+        await _context.SaveChangesAsync();
 
         // Act
-        var result = await controller.GetTasks();
+        var result = await _controller.GetToDoItems();
 
         // Assert
+        Assert.NotNull(result.Value);
         Assert.Equal(2, result.Value.Count());
     }
 
     [Fact]
-    public async Task GetTask_ReturnsTaskById()
+    public async Task GetToDo_ReturnsToDoById()
     {
         // Arrange
-        var context = GetInMemoryDbContext();
-        var task = new Task { Title = "Test Task", Status = Enums.Status.InProgress };
-        context.Tasks.Add(task);
-        await context.SaveChangesAsync();
-
-        var controller = new TaskController(context);
+        var toDo = new ToDoItem { Title = "ToDo", Status = "Status.InProgress" };
+        _context.ToDoItems.Add(toDo);
+        await _context.SaveChangesAsync();
 
         // Act
-        var result = await controller.GetTask(task.Id);
+        var result = await _controller.GetToDoItem(toDo.Id);
 
         // Assert
         Assert.NotNull(result.Value);
-        Assert.Equal(task.Title, result.Value.Title);
+        Assert.Equal(toDo.Title, result.Value.Title);
     }
 
     [Fact]
-    public async Task CreateTask_AddsNewTask()
+    public async Task CreateToDoItem_AddsNewToDoItem()
     {
         // Arrange
-        var context = GetInMemoryDbContext();
-        var controller = new TaskController(context);
-        var newTask = new Task { Title = "New Task", Status = Enums.Status.NotStarted };
+        var newToDo = new ToDoItem
+        {
+            Title = "New ToDo",
+            Description = "Description",
+            Status = "Status.NotStarted",
+            DueDate = DateTime.UtcNow.ToString()
+        };
 
         // Act
-        var result = await controller.CreateTask(newTask);
+        var result = await _controller.CreateToDoItem(newToDo);
 
         // Assert
-        Assert.Equal(1, context.Tasks.Count());
-        Assert.Equal("New Task", context.Tasks.First().Title);
+        Assert.Equal(1, _context.ToDoItems.Count());
+        Assert.Equal("New ToDo", _context.ToDoItems.First().Title);
     }
 
     [Fact]
-    public async Task UpdateTask_UpdatesExistingTask()
+    public async Task UpdateToDo_UpdatesExistingToDo()
     {
         // Arrange
-        var context = GetInMemoryDbContext();
-        var task = new Task { Title = "Old Task", Status = Enums.Status.NotStarted };
-        context.Tasks.Add(task);
-        await context.SaveChangesAsync();
+        var toDo = new ToDoItem { Title = "Old ToDo", Status = "Status.NotStarted" };
+        _context.ToDoItems.Add(toDo);
+        await _context.SaveChangesAsync();
 
-        var controller = new TaskController(context);
-        task.Title = "Updated Task";
+        var updatedToDo = toDo;
+        updatedToDo.Title = "Updated ToDo";
+        updatedToDo.Description = "Updated Description";
+        updatedToDo.Status = "Status.Completed";
+        updatedToDo.DueDate = DateTime.UtcNow.ToString();
 
         // Act
-        var result = await controller.UpdateTask(task.Id, task);
+        var result = await _controller.UpdateTodoItem(toDo.Id.ToString(), updatedToDo);
 
         // Assert
-        Assert.Equal("Updated Task", context.Tasks.First().Title);
+        var updatedEntity = _context.ToDoItems.First();
+        Assert.Equal("Updated ToDo", updatedEntity.Title);
+        Assert.Equal("Updated Description", updatedEntity.Description);
+        Assert.Equal("Status.Completed", updatedEntity.Status);
     }
 
     [Fact]
-    public async Task DeleteTask_RemovesTask()
+    public async Task DeleteToDo_RemovesToDo()
     {
         // Arrange
-        var context = GetInMemoryDbContext();
-        var task = new Task { Title = "Task to Delete", Status = Enums.Status.Completed };
-        context.Tasks.Add(task);
-        await context.SaveChangesAsync();
-
-        var controller = new TaskController(context);
+        var toDo = new ToDoItem { Title = "ToDo to Delete", Status = "Status.Completed" };
+        _context.ToDoItems.Add(toDo);
+        await _context.SaveChangesAsync();
 
         // Act
-        var result = await controller.DeleteTask(task.Id);
+        var result = await _controller.DeleteToDoItem(toDo.Id);
 
         // Assert
-        Assert.Empty(context.Tasks);
+        Assert.Empty(_context.ToDoItems);
+    }
+
+    public void Dispose()
+    {
+        _context.Dispose();
     }
 }

@@ -9,7 +9,17 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 builder.Services.AddDbContext<TaskListDbContext>(options =>
-    options.UseInMemoryDatabase("ToDoListDb"));
+    options.UseInMemoryDatabase("ToDoDb"));
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReactApp", policy =>
+    {
+        policy.WithOrigins("http://localhost:3000")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
 
 var app = builder.Build();
 
@@ -22,6 +32,8 @@ if (app.Environment.IsDevelopment())
         options.DocumentPath = "/openapi/v1.json";
     });
 }
+
+app.UseCors("AllowReactApp");
 
 app.UseHttpsRedirection();
 

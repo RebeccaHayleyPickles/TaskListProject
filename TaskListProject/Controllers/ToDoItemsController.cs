@@ -25,18 +25,18 @@ public class ToDoItemsController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<ToDoItem>> GetToDoItem(Guid id)
     {
-        var task = await _context.ToDoItems.FindAsync(id);
+        var toDoItem = await _context.ToDoItems.FindAsync(id);
 
-        if (task == null)
+        if (toDoItem == null)
         {
             return NotFound();
         }
 
-        return task;
+        return toDoItem;
     }
 
     [HttpPost]
-    public async Task<ActionResult<ToDoItem>> CreateTask(ToDoItem toDoItem)
+    public async Task<ActionResult<ToDoItem>> CreateToDoItem(ToDoItem toDoItem)
     {
         _context.ToDoItems.Add(toDoItem);
         await _context.SaveChangesAsync();
@@ -45,15 +45,12 @@ public class ToDoItemsController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateStatus(Guid id, Status status)
+    public async Task<IActionResult> UpdateTodoItem(string id, ToDoItem toDoItem)
     {
-        var toDoItem = await _context.ToDoItems.FindAsync(id);
-        if (toDoItem == null)
+        if (!Guid.TryParse(id, out Guid inputId) || inputId != toDoItem.Id)
         {
-            return NotFound();
+            return BadRequest();
         }
-
-        toDoItem.Status = status;
 
         _context.Entry(toDoItem).State = EntityState.Modified;
 
@@ -63,7 +60,7 @@ public class ToDoItemsController : ControllerBase
         }
         catch (DbUpdateConcurrencyException)
         {
-            if (!_context.ToDoItems.Any(e => e.Id == id))
+            if (!_context.ToDoItems.Any(e => e.Id == inputId))
             {
                 return NotFound();
             }
