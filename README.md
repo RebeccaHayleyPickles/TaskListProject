@@ -26,11 +26,15 @@ This is a simple Web API built with ASP.NET Core for managing a to-do list.
    ```
 
 2. Open the project folder in VS Code:
-    ```code .```
+    ```
+    code .
+    ```
 
 3. Restore dependencies and run the API:
-    ```dotnet restore
-    dotnet run```
+    ```
+    dotnet restore
+    dotnet run
+    ```
 
 4. Open your browser to view the Swagger UI:
     ```https://localhost:{port}/swagger```
@@ -38,9 +42,9 @@ This is a simple Web API built with ASP.NET Core for managing a to-do list.
 
 ### API Endpoints
 
-Method | Endpoint | Description
-GET | /api/todoitems | Get all to-do items
-GET | /api/todoitems/{id} | Get a specific item
-POST | /api/todoitems | Add a new to-do item
-PUT | /api/todoitems/{id} | Update an existing item
-DELETE | /api/todoitems/{id} | Delete a to-do item
+| HTTP Type | Method | Endpoint | Description
+| GET | GetToDoItems | /api/todoitems | Get all to-do items
+| GET | GetToDoItem | /api/todoitems/{id} | Get a specific item
+| POST | CreateToDoItem | /api/todoitems | Add a new to-do item
+| PUT | UpdateToDoItem | /api/todoitems/{id} | Update an existing item
+| DELETE | DeleteToDoItem | /api/todoitems/{id} | Delete a to-do item
