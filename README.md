@@ -42,9 +42,10 @@ This is a simple Web API built with ASP.NET Core for managing a to-do list.
 
 ### API Endpoints
 
-| HTTP Type | Method | Endpoint | Description
-| GET | GetToDoItems | /api/todoitems | Get all to-do items
-| GET | GetToDoItem | /api/todoitems/{id} | Get a specific item
-| POST | CreateToDoItem | /api/todoitems | Add a new to-do item
-| PUT | UpdateToDoItem | /api/todoitems/{id} | Update an existing item
-| DELETE | DeleteToDoItem | /api/todoitems/{id} | Delete a to-do item
+| HTTP Type | Method | Endpoint | Description |
+| --- | --- | --- | --- |
+| GET | GetToDoItems | /api/todoitems | Get all to-do items |
+| GET | GetToDoItem | /api/todoitems/{id} | Get a specific item |
+| POST | CreateToDoItem | /api/todoitems | Add a new to-do item |
+| PUT | UpdateToDoItem | /api/todoitems/{id} | Update an existing item |
+| DELETE | DeleteToDoItem | /api/todoitems/{id} | Delete a to-do item |
