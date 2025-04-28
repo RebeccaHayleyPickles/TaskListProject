@@ -11,12 +11,6 @@ This is a simple Web API built with ASP.NET Core for managing a to-do list.
 
 ## Getting Started
 
-### Prerequisites
-
-- [.NET SDK 9.0 (Preview)](https://dotnet.microsoft.com/en-us/download)
-- [Visual Studio Code](https://code.visualstudio.com/)
-- [C# for Visual Studio Code extension](https://marketplace.visualstudio.com/items?itemName=ms-dotnettools.csharp)
-
 ### Setup Instructions
 
 1. Clone the repository:
@@ -25,7 +19,7 @@ This is a simple Web API built with ASP.NET Core for managing a to-do list.
    cd TaskListProject
    ```
 
-2. Open the project folder in VS Code:
+2. Open the project folder in VS Code (or equivalent IDE):
     ```
     code .
     ```
